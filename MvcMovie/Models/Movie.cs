@@ -9,7 +9,7 @@ namespace MvcMovie.Models
     {
         public int ID { get; set; }
 
-        [StringLength(60, MinimumLength = 3)]
+        [StringLength(60, MinimumLength = 3, ErrorMessage = "Please Enter a valid Title!")]
         public string Title { get; set; }
 
         [Display(Name = "Release Date")]
@@ -17,16 +17,16 @@ namespace MvcMovie.Models
         [DisplayFormat(DataFormatString ="{0:yyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime ReleaseDate { get; set; }
 
-        [RegularExpression(@"[A-Z]+[a-zA-Z'\s]*$")]
-        [Required]
-        [StringLength(30)]
+        
+        [Required(ErrorMessage = "Please Enter a Genre!")]
+        [StringLength(30, ErrorMessage = "Please Enter a Genre with less then 30 char!")]
         public string Genre { get; set; }
 
-        [Range(1, 100)]
+        [Range(1, 100, ErrorMessage = "Please Enter a price between 1 and 100")]
         [DataType(DataType.Currency)]
         public decimal Price { get; set; }
 
-        [RegularExpression(@"^[A-Z]+[a-zA-Z'\s]*$")]
+        [RegularExpression(@"^[A-Z]+[a-zA-Z0-9_-]*$", ErrorMessage = "Please Enter a valid Rating!")]
         [StringLength(5)]
         public string Rating { get; set; }
     }
