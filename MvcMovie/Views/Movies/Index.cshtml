@@ -1,70 +1,135 @@
-﻿ @model IEnumerable<MvcMovie.Models.Movie>
+﻿@model IEnumerable<MvcMovie.Models.Movie>
 
 @{
     ViewBag.Title = "Home";
 }
 
-    <div style="margin-top:15px">
-        <input type="button" value="Create New" class="btn btn-primary" onclick="location.href='@Url.Action("Create", "Movies")'" />
+<div style="margin-top:15px">
+    <input type="button" value="Create New" class="btn btn-primary" onclick="location.href='@Url.Action("Create", "Movies")'" />
+</div>
+
+
+@using (Html.BeginForm("Index", "Movies", FormMethod.Get))
+{
+<p style="margin-top:15px; float:left">
+    Genre: @Html.DropDownList("movieGenre", "All")
+    Title: @Html.TextBox("SearchString", null , new { @placeholder="search database ..."})
+    <input type="submit" value="Filter" class="btn btn-sm"/>
+
+    <div id="tableSearch" style="display:none; float: right; margin-top:15px">
+        <input type="text" id="searchInput" placeholder="search table ...">
+        <i class="fas fa-fw custom-search-icon fa-search"></i>
     </div>
-
-<p>
-    @*
-        @Html.ActionLink("Create New", "Create")
-    *@
-
-    @using (Html.BeginForm("Index","Movies",FormMethod.Get))
-    {
-        <p>
-            Genre: @Html.DropDownList("movieGenre", "All")
-            Title: @Html.TextBox("SearchString")  
-            <input type="submit" value="filter" />
-        </p>
-    }
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Title)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ReleaseDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Genre)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Price)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Rating)
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-<tr>
-    <td>
-        @Html.DisplayFor(modelItem => item.Title)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.ReleaseDate)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Genre)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Price)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Rating)
-    </td>
-    <td>
-        @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-        @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-        @Html.ActionLink("Delete", "Delete", new { id = item.ID })
-    </td>
-</tr>
 }
+@*</p> *@
 
-</table>
+<div>
+    
+
+    <table class="table" id="movieTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReleaseDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Genre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Price)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Rating)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+
+        @*
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReleaseDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Genre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Price)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Rating)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                    </td>
+                </tr>
+            }
+        *@
+
+    </table>
+
+</div>
+
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+<link rel="stylesheet" href="~/Content/movieTable.css" />
+
+
+@section Scripts{
+    <script src="//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script>
+
+    $(document).ready(function () {
+
+        var movieArray = @Html.Raw(Json.Encode(Model));
+        var movietable = $('#movieTable').DataTable({
+            "bLengthChange"	: 	false,
+            "data": movieArray,
+            "columns" : [
+                        { "data": "Title", "autoWidth": true },
+                        { "data": "ReleaseDate", "autoWidth": true },
+                        { "data": "Genre", "autoWidth": true },
+                        { "data": "Price", "autoWidth": true },
+                        { "data": "Rating", "autoWidth": true },
+                        { "data": "ID", "autoWidth": true }
+            ],
+             "columnDefs": [
+                 {
+                        targets: 1, render: function (data) {
+
+                           return moment(data).format("dddd, MMMM Do YYYY");
+                        }
+                 },
+             ],
+             "createdRow": function ( row, data, index ) {
+
+                  $('td', row).eq(5).html("<a href='/Movies/Edit/"+data.ID+"' )'>Edit</a> | <a href='/Movies/Details/"+data.ID+"' )'>Details</a> | <a href='/Movies/Delete/"+data.ID+"' )'>Deletet</a>");
+        	 }
+        });
+
+        $('#movieTable_filter').remove();
+
+        $('#tableSearch').show();
+        // unable the search capability on the table
+	    $("#searchInput").on( 'keyup', function () {
+        movietable.search( this.value ).draw();
+	    });
+
+    });
+
+
+    </script>
+
+}

@@ -1,0 +1,26 @@
+﻿/* style the table search */
+#searchInput {
+    float: right;
+    border: 1px solid #ddd;
+    background: #ffffff;
+    height: 30px;
+    padding: 7px 31px 8px;
+   
+}
+
+#SearchString {
+    border: 1px solid #ddd;
+    background: #ffffff;
+    height: 30px;
+    padding: 7px 8px 7px;
+}
+
+/* style search icon*/
+.custom-search-icon {
+    color: #337ab7;
+    font-size: 1.5em !important;
+    left: 28px !important;
+    position: relative;
+    top: 5px;
+    float: right;
+}
